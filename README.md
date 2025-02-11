@@ -20,15 +20,27 @@ This project is part of my journey of learning Go and is not meant to be fully f
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/AdrianRRojo/goBackend.git
-   ```
+```bash
+    git clone https://github.com/AdrianRRojo/goBackend.git
+```
 2. CD into directory:
-  ```bash
+```bash
     cd goBackend
-  ```
+```
 
 3. Run Project:
-    ```bash
+```bash
     go run .
-    ```
+```
+
+### ENV variables
+
+This project uses the following environment variables:
+
+- `DB`: The name of the database 
+- `DB_USER`: The username for the database 
+- `DB_HOST`: The host for the database
+- `DB_PASS`: The password for the database (optional). If you use a password for your localhost database, you can set it using this variable. Make sure to add the password to the MySQL configuration in `/View/controllers/Register.go`:
+```go
+Passwd: os.Getenv("DB_PASS"),
+```
