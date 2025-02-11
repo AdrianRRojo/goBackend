@@ -17,6 +17,6 @@ func main() {
 	fmt.Printf("Live at: http://localhost%v", port)
 	err := http.ListenAndServe(port, nil)
 	if err == nil {
-		panic(err)
+		fmt.Printf("Error -- %v", err)
 	}
 }
