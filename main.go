@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
+	serveStaticFiles()
+
 	http.HandleFunc("/", getLanding)
 	port := ":8200"
 
