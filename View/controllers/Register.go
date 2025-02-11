@@ -23,22 +23,17 @@ type User struct {
 var db *sql.DB
 
 func PostForm(w http.ResponseWriter, r *http.Request) {
-	// w.Header().Set("Access-Control-Allow-Origin", "*")
-	// w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	// w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	// if r.Method == http.MethodOptions {
-	// 	http.Error(w, "Method Not Allowed", http.StatusAccepted)
-	// }
-	// http.Error(w, "Reached POST", http.StatusAccepted)
+	// Only POST routes allowed
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusBadRequest)
 		return
 	}
 
 	var user User
+	//Load ENV
 	godotenv.Load()
 
+	// Connect config for mysql DB
 	conn := mysql.Config{
 		User:   os.Getenv("DB_USER"),
 		Net:    "tcp",
@@ -47,11 +42,13 @@ func PostForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var error error
+	// Connect to DB
 	db, error = sql.Open("mysql", conn.FormatDSN())
 	if error != nil {
 		http.Error(w, "Could not connect to the database", http.StatusBadRequest)
 	}
 
+	//Read Body data
 	data, dataError := io.ReadAll(r.Body)
 	if dataError != nil {
 		http.Error(w, "Could not read body", http.StatusBadRequest)
@@ -59,13 +56,17 @@ func PostForm(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
+	//Creates a buffer for body data
 	r.Body = io.NopCloser(bytes.NewBuffer(data))
+
+	// decodes & stores data into user
 	jsonErr := json.NewDecoder(r.Body).Decode(&user)
 
 	if jsonErr != nil {
 		http.Error(w, "Could not create user", http.StatusBadRequest)
 	}
 
+	//Insert data into DB
 	dbExec, dbError := db.Exec("INSERT INTO users (Fname, Lname, dob) VALUES (?,?,?)", user.Fname, user.Lname, user.Dob)
 	if dbError != nil {
 		http.Error(w, "Could not submit user", http.StatusBadRequest)
